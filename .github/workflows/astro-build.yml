@@ -8,6 +8,10 @@ env:
   STRAPI_URL: ${{ secrets.STRAPI_URL }}
   STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
 
+concurrency:
+  group: astro-build-deploy # Unique identifier for your workflow type
+  cancel-in-progress: true # Cancels any currently running jobs in this group if a new one is triggered
+
 jobs:
   build:
     runs-on: ubuntu-latest
