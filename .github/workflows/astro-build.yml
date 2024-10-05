@@ -1,0 +1,40 @@
+name: Astro Build and Deploy to S3
+
+on:
+  repository_dispatch:
+    types: [content_update]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20" # Adjust the Node.js version as needed
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro site
+        run: npm run build
+
+      - name: Deploy to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          # Install the AWS CLI if it's not already installed
+          sudo apt-get install -y awscli
+
+          # Sync the built Astro files from the 'dist' folder to the S3 bucket
+          aws s3 sync dist/ s3://$AWS_S3_BUCKET/ --region $AWS_REGION --delete
+
+          # Set the files to be publicly accessible
+          # aws s3 cp s3://$AWS_S3_BUCKET/ s3://$AWS_S3_BUCKET/ --recursive --acl public-read
