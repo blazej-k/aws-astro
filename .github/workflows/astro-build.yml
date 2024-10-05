@@ -1,7 +1,9 @@
 name: Astro Build and Deploy to S3
 
 on:
-  repository_dispatch: test
+  repository_dispatch:
+    types:
+      - test
 env:
   STRAPI_URL: ${{ secrets.STRAPI_URL }}
   STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
