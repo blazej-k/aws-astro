@@ -37,6 +37,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_NAME }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_DISTRIBUTION_ID: ${{ secrets.AWS_DISTRIBUTION_ID }}
         run: |
           # Install the AWS CLI if it's not already installed
           sudo apt-get install -y awscli
@@ -44,5 +45,4 @@ jobs:
           # Sync the built Astro files from the 'dist' folder to the S3 bucket
           aws s3 sync dist/ s3://$AWS_S3_BUCKET/ --region $AWS_REGION --delete
 
-          # Set the files to be publicly accessible
-          # aws s3 cp s3://$AWS_S3_BUCKET/ s3://$AWS_S3_BUCKET/ --recursive --acl public-read
+          aws cloudfront create-invalidation --distribution-id $AWS_DISTRIBUTION_ID --paths "/*"
